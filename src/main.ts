@@ -1,3 +1,4 @@
+import {somethingSystem} from "./something.system";
 
 
 console.log(import.meta.hot)
@@ -6,3 +7,6 @@ if (import.meta.hot) {
 		console.log(data.msg) // hello
 	})
 }
+
+
+console.log( new Error().stack)
