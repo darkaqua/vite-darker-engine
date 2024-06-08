@@ -1,7 +1,13 @@
 import {HmrContext, Plugin} from "vite";
 import colors from 'picocolors'
 
-const getSystemObject = (file: string, content: string) => {
+type SystemData = {
+	url: string,
+	basePath: string[],
+	funcName: string
+}
+
+const getSystemObject = (file: string, content: string): SystemData => {
 	//@ts-ignore
 	const currentDirName = __dirname.replaceAll('\\', '/') + '/'
 	
@@ -18,14 +24,13 @@ const getSystemObject = (file: string, content: string) => {
 }
 
 export const plugin = (): Plugin => {
-
 	let _server;
 	
 	return {
 		name: 'vite-darker-engine',
 		enforce: 'pre',
 		handleHotUpdate: async (ctx: HmrContext) => {
-			if(ctx.file.indexOf('system.ts') === -1) return
+			if(ctx.file.indexOf('.system.ts') === -1) return
 			
 			const systemObject = getSystemObject(ctx.file, await ctx.read())
 			_server.config.logger.info(colors.yellow(`system hot-reload `) + colors.dim(systemObject.funcName), {
@@ -37,20 +42,15 @@ export const plugin = (): Plugin => {
 		},
 		configureServer(server) {
 			_server = server
-			// server.ws.on('connection', () => {
-			// 	console.log('asdasd')
-			// 	server.ws.send('my:greetings', { msg: 'hello' })
-			// })
 		},
 	}
 }
 
-export const abc = (hot, onSwapSystem: (abc, data) => void) => {
+export const initViteDarkerEnginePlugin = (hot, onSwapSystem: (systemModule: any, systemData: SystemData) => void) => {
 	if (hot) {
-		hot.on('dev:system', async (data) => {
-			const abc = await import(/* @vite-ignore */`/${data.url}?a=${performance.now()}`)
-			// abc[data.funcName]().onLoad()
-			onSwapSystem(abc, data)
+		hot.on('dev:system', async (systemData: SystemData) => {
+			const systemModule = await import(/* @vite-ignore */`/${systemData.url}?a=${performance.now()}`)
+			onSwapSystem(systemModule, systemData)
 		})
 	}
 }
