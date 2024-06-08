@@ -1,8 +1,11 @@
 {
   "name": "@darkaqua/vite-darker-engine",
-  "version": "1.0.0",
-  "main": "plugin.ts",
-  "module": "plugin.ts",
+  "version": "1.0.8",
+  "type": "module",
+  "main": "plugin.js",
+  "module": "plugin.js",
+  "types": "plugin.ts",
+  "private": false,
   "license": "MIT",
   "peerDependencies": {
     "vite": "*"
