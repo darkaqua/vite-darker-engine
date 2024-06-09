@@ -1,6 +1,9 @@
 {
-  "name": "@darkaqua/vite-darker-engine",
-  "version": "1.0.8",
+  "scripts": {
+    "publish": "npm publish --access public"
+  },
+  "name": "@darkaqua/vite-tulip",
+  "version": "1.0.3",
   "type": "module",
   "main": "plugin.js",
   "module": "plugin.js",
@@ -11,6 +14,7 @@
     "vite": "*"
   },
   "devDependencies": {
-    "picocolors": "1.0.1"
+    "picocolors": "1.0.1",
+    "vite": "latest"
   }
 }

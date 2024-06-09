@@ -1,17 +1,18 @@
-import {HmrContext, Plugin} from "vite";
+import {Plugin, HmrContext} from "vite";
 import colors from 'picocolors'
 
-type SystemData = {
+type ComponentData = {
 	url: string,
 	basePath: string[],
 	funcName: string
 }
-const getSystemObject = (currentDirName: string, file: string, content: string): SystemData => {
+
+const getComponentObject = (currentDirName, file, content) => {
 	
 	const url = file.replace(currentDirName, '')
 	const parts = url.split('/');
 	
-	const match = /export const (.*) = \(/.exec(content)
+	const match = /export const (.*): /.exec(content)
 	
 	return {
 		url,
@@ -24,31 +25,31 @@ export const plugin = (): Plugin => {
 	let _server;
 	
 	return {
-		name: 'vite-darker-engine',
+		name: 'vite-tulip',
 		enforce: 'pre',
 		handleHotUpdate: async (ctx: HmrContext) => {
-			if(ctx.file.indexOf('.system.ts') === -1) return
+			if(ctx.file.indexOf('.component.ts') === -1) return
 			
+			console.log(ctx.modules)
 			const currentDirName = ctx.server.config.envDir.replaceAll('\\', '/') + '/'
-			const systemObject = getSystemObject(currentDirName, ctx.file, await ctx.read())
-			_server.config.logger.info(colors.yellow(`system hot-reload `) + colors.dim(systemObject.funcName), {
+			const componentObject = getComponentObject(currentDirName, ctx.file, await ctx.read())
+			_server.config.logger.info(colors.yellow(`component hot-reload `) + colors.dim(componentObject.funcName), {
 				clear: true,
 				timestamp: true,
 			})
-			_server.ws.send('dev:system', systemObject)
+			_server.ws.send('dev:component', componentObject)
 			return []
 		},
 		configureServer(server) {
 			_server = server
 		},
 	}
-}
-
-export const initViteDarkerEnginePlugin = (hot, onSwapSystem: (systemModule: any, systemData: SystemData) => void) => {
+};
+export const initViteTulipPlugin = (hot: any, onSwapComponent: (componentModule: any, componentData: ComponentData) => void) => {
 	if (hot) {
-		hot.on('dev:system', async (systemData: SystemData) => {
-			const systemModule = await import(/* @vite-ignore */`/${systemData.url}?a=${Math.trunc(performance.now())}`)
-			onSwapSystem(systemModule, systemData)
+		hot.on('dev:component', async (componentData) => {
+			const componentModule = await import(/* @vite-ignore */`/${componentData.url}?a=${Math.trunc(performance.now())}`)
+			onSwapComponent(componentModule, componentData)
 		})
 	}
-}
+};
