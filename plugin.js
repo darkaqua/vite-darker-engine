@@ -15,31 +15,38 @@ const getComponentObject = (currentDirName, file, content) => {
 }
 
 export const plugin = ()  => {
-	let _server;
+	let $server;
+	let $isPluginLoaded = false
 
 	return {
 		name: 'vite-tulip',
 		enforce: 'pre',
 		handleHotUpdate: async (ctx) => {
-			if(ctx.file.indexOf('.component.ts') === -1) return
+			console.log($isPluginLoaded)
+			if(!$isPluginLoaded || ctx.file.indexOf('.component.ts') === -1) return
 
 			const currentDirName = ctx.server.config.envDir.replaceAll('\\', '/') + '/'
 			const componentObject = getComponentObject(currentDirName, ctx.file, await ctx.read())
-			_server.config.logger.info(colors.yellow(`component hot-reload `) + colors.dim(componentObject.funcName), {
+			$server.config.logger.info(colors.yellow(`component hot-reload `) + colors.dim(componentObject.funcName), {
 				clear: true,
 				timestamp: true,
 			})
-			_server.ws.send('dev:component', componentObject)
+			$server.ws.send('dev:component', componentObject)
 			return []
 		},
 		configureServer(server) {
-			_server = server
+			$server = server
+
+			$server.ws.on('dev:start', () => {
+				$isPluginLoaded = true
+			})
 		},
 	}
 }
 
 export const initViteTulipPlugin = (hot, onSwapComponent) => {
 	if (hot) {
+		hot.send('dev:start');
 		hot.on('dev:component', async (componentData) => {
 			const componentModule = await import(/* @vite-ignore */`/${componentData.url}?a=${Math.trunc(performance.now())}`)
 			onSwapComponent(componentModule, componentData)

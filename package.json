@@ -3,7 +3,7 @@
     "publish": "npm publish --access public"
   },
   "name": "@darkaqua/vite-tulip",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "main": "plugin.js",
   "module": "plugin.js",
