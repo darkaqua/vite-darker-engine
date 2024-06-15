@@ -2,7 +2,7 @@
   "scripts": {
     "publish": "npm publish --access public"
   },
-  "name": "@darkaqua/vite-tulip",
+  "name": "@tulib/vite-tulip",
   "version": "1.0.5",
   "type": "module",
   "main": "plugin.js",
