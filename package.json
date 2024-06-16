@@ -1,9 +1,10 @@
 {
   "scripts": {
+    "build": "yarn global add esbuild && esbuild --bundle plugin.ts > plugin.js --platform=node",
     "publish": "npm publish --access public"
   },
   "name": "@tulib/vite-tulip",
-  "version": "1.0.5",
+  "version": "0.0.0",
   "type": "module",
   "main": "plugin.js",
   "module": "plugin.js",
